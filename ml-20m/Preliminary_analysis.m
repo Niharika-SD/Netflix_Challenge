@@ -70,21 +70,28 @@ miss(k) = 0;
 [y_labels_1,y_labels_2] = clustering(A,A1,4);
 
 A_step2 = [];
-A1_step2 = [];
 
 for j = 1:4
    
     x_cat = horzcat(x',y_labels_1) ;
     miss_cat = horzcat(miss',y_labels_1) ;
-    x_subs = x_cat(x_cat(:,end)==j,1:end-1);
+    
     miss_subs = x_cat(miss_cat(:,end)==j,1:end-1);
+    x_subs = (1-miss_subs).*(x_cat(x_cat(:,end)==j,1:end-1));
+    
+    x_subs = x_subs';
+    miss_subs =miss_subs';
+    mu_user = sum(x_subs,2)./sum((1-miss_subs),2);
+    mu_movie = sum(x_subs,1)./sum((1-miss_subs),1);
+
    
-    [A_new,A1_new,rmse1,rmse2] = matrix_completion(x_subs',miss_subs','step2',1);
-    A_step2 = vertcat(A_step2,A_new);
-    A1_step2 = vertcat(A1_step2,A1_new);
-    [A,A1,~,~] = matrix_completion(x,miss,'step2',1);
+    x_aug =  x_subs+ (1-miss_subs).*(mu_user* ones(1,size(x_subs,2))*0.452 +0.548*ones(size(x_subs,1),1)*mu_movie);
+    [m,n] = size(x_subs);
+    tau = 5*sqrt(m*n);
+    A_new = lrmc(x_aug,100*tau,miss_subs,0.2);
+    A_step2 = horzcat(A_step2,A_new);
+       
 end
 
-[y_labels_1,y_labels_2] = clustering(A_step2,A1_step2,4);
 
 

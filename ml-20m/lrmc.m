@@ -7,7 +7,7 @@ function A=lrmc(X,tau,W,thresh)
 Z = zeros(m,n);
 maxIter =1000;
 
-l_param = 1.9; %learning parameter for proximal gradient
+l_param = 0.09; %learning parameter for proximal gradient
 A= Z;
 figure;
 title('Error convergence')
