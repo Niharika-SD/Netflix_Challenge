@@ -9,7 +9,8 @@ library("optmatch")
 library("reshape2")
 library("readxl")
 
-ratings <- read.table("/home/niharika-shimona/Documents/Projects/Netflix_Challenge/ml-20m/ratings.csv",header = TRUE, sep = ",")
-genres <- read_excel("/home/niharika-shimona/Documents/Projects/Netflix_Challenge/ml-20m/movies.xlsx")
+ratings <- read.table("/home/niharika-shimona/Documents/Projects/Netflix_Challenge/ml-100k/u.data")
+
+genres <- read_excel("/home/niharika-shimona/Documents/Projects/Netflix_Challenge/ml-100k/u_item.xlsx")
 ratings <- merge(ratings, genres, "movieId")
 write.csv(ratings,"/home/niharika-shimona/Documents/Projects/Netflix_Challenge/ml-20m/movies_genre.csv")

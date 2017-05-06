@@ -8,7 +8,7 @@ import logging
 import numpy as np
 from scipy.sparse.linalg import svds
 
-def lrmc(X,method , delta=1e-6, mu=None, maxiter=500, verbose=False,svd_method="approximate", **svd_args):
+def lrmc(X, delta=1e-6, mu=None, maxiter=500, verbose=False,svd_method="approximate", **svd_args):
     # Check the SVD method.
     allowed_methods = ["approximate", "exact", "sparse"]
     if svd_method not in allowed_methods:
@@ -58,15 +58,15 @@ def lrmc(X,method , delta=1e-6, mu=None, maxiter=500, verbose=False,svd_method="
         u, s, v = u[:, :rank], s[:rank], v[:rank, :]
         A = np.dot(u, np.dot(np.diag(s), v))
     	Z = Z + lam*(W*X -W*A);
-
-	err = (np.sqrt(np.sum((Z-Z_prev)** 2))) / (np.sqrt(np.sum(W**2)))
-		if verbose:
-			print(("Iteration {0}: error={1:.3e}, rank={2:d}, nnz={3:d}, "
+        
+        err = (np.sqrt(np.sum((Z-Z_prev)** 2))) / (np.sqrt(np.sum(W**2)))
+        if verbose:
+            print(("Iteration {0}: error={1:.3e}, rank={2:d}, nnz={3:d}, "
                    "time={4:.3e}")
-                  .format(i, err, np.sum(s > 0), np.sum(S > 0), svd_time))
-		if err < delta:
+                .format(i, err, np.sum(s > 0), np.sum(S > 0), svd_time))
+        if err < delta:
 			break
-		i += 1
+        i += 1
 
 	if i >= maxiter:
 		logging.warn("convergence not reached in pcp")
@@ -82,15 +82,16 @@ def lrmc(X,method , delta=1e-6, mu=None, maxiter=500, verbose=False,svd_method="
 
 
     def _svd(method, X, rank, tol, **args):
-		rank = min(rank, np.min(X.shape))
-		if method == "approximate":
-			return fbpca.pca(X, k=rank, raw=True, **args)
-    	elif method == "exact":
-        	return np.linalg.svd(X, full_matrices=False, **args)
-		elif method == "sparse":	
-			if rank >= np.min(X.shape):
-				return np.linalg.svd(X, full_matrices=False)
-			u, s, v = svds(X, k=rank, tol=tol)
-			u, s, v = u[:, ::-1], s[::-1], v[::-1, :]
-        	return u, s, v
-		raise ValueError("invalid SVD method")
+        rank = min(rank, np.min(X.shape))
+        if method == "approximate":
+            return fbpca.pca(X, k=rank, raw=True, **args)
+        elif method == "exact":
+            return np.linalg.svd(X, full_matrices=False, **args)
+        elif method == "sparse":	
+            if rank >= np.min(X.shape):
+                return np.linalg.svd(X, full_matrices=False)
+            u, s, v = svds(X, k=rank, tol=tol)
+            u, s, v = u[:, ::-1], s[::-1], v[::-1, :]
+            return u, s, v
+        else:
+            raise ValueError("invalid SVD method")
