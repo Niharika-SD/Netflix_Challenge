@@ -7,7 +7,7 @@ function A=lrmc(X,tau,W,thresh)
 Z = zeros(m,n);
 maxIter =1000;
 
-l_param = 0.09; %learning parameter for proximal gradient
+l_param = 1.9; %learning parameter for proximal gradient
 A= Z;
 figure;
 title('Error convergence')
@@ -15,10 +15,11 @@ xlabel('no of iterations')
 ylabel('Error')
 
 for i = 1:maxIter
-    fprintf('Iteration number: %d || error  = %f \n',i, norm(X-A ,'fro'));
+    fprintf('Iteration number: %d || error  = %f \n',i, 0.5*norm(X-A ,'fro'));
     Z_dash = Z.*W;
-    err(i) = norm(X-A ,'fro');
-    [U,S,V] =svd(Z_dash);
+    err(i) = 0.5*norm(X-A ,'fro');
+    r1(i) = rank(A);
+    [U,S,V] = svd(Z_dash);
     S =sign(S).*(max(abs(S)-tau,0));
     Z_prev =Z;
     A = U*S*V';
@@ -27,6 +28,12 @@ for i = 1:maxIter
         break;
     end
 end
-plot(1:i,err)
-
+subplot (2,1,1);plot(1:i,err,'r')
+title('error covergence')
+xlabel('no of iterations')
+ylabel('error')
+subplot(2,1,2);plot(1:i,r1,'g')
+title('Rank of solution')
+xlabel('no of iterations')
+ylabel('Rank')
 end

@@ -20,9 +20,9 @@ function [A,A1,rmse1,rmse2] = matrix_completion(x,miss,strcase,cv_state)
     
         Gaus = rand(size(x));
         x1 = x_train + 5*Gaus.* pert;
-        A = lrmc(x1,tau,miss,0.001);
+        A = lrmc(x1,tau,miss,0.0002);
         if strcmp(strcase,'step1')
-            rmse1(i) = sqrt(sum((x(k_1_test)-A(k_1_test)).*(x(k_1_test)-A(k_1_test))))/(size(k_1_test,1));
+            rmse1(i) = sqrt(sum((x(k_1_test)-A(k_1_test)).*(x(k_1_test)-A(k_1_test)))/(size(k_1_test,1)));
         else 
             rmse1 = 0;
         end
@@ -32,8 +32,8 @@ function [A,A1,rmse1,rmse2] = matrix_completion(x,miss,strcase,cv_state)
            mu_movie = sum(x_train,1)./sum(pert,1);
 
    
-           x_aug =  x_train+ pert.*(mu_user* ones(1,size(x_train,2))*0.452 +0.548*ones(size(x_train,1),1)*mu_movie);
-           A1 = lrmc(x_aug,tau,miss,0.2);
+           x_aug =  x_train+ pert.*(mu_user* ones(1,size(x_train,2))*0.548 +0.452*ones(size(x_train,1),1)*mu_movie);
+           A1 = lrmc(x_aug,tau,miss,0.02);
            rmse2(i) = sqrt(sum((x(k_1_test)-A1(k_1_test)).*(x(k_1_test)-A1(k_1_test))))/(size(k_1_test,1));
         else 
             A1= A;
